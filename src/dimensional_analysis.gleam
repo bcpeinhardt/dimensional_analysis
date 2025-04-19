@@ -1,17 +1,15 @@
 import tote/bag
 
 // For example, `miles`
-pub type Dimension = String
+pub type Dimension =
+  String
 
 /// A unit is a fraction with a set of dimensions on top
 /// and on bottom. These units can have different degrees.
 /// Example: `m/s^2`.
 /// A bag is the perfect data structure to describe this.
 pub type Unit {
-  Unit(
-    numerator: bag.Bag(Dimension),
-    denominator: bag.Bag(Dimension)
-  )
+  Unit(numerator: bag.Bag(Dimension), denominator: bag.Bag(Dimension))
 }
 
 pub fn multiply(lhs: Unit, rhs: Unit) -> Unit {
@@ -30,7 +28,6 @@ pub fn divide(lhs: Unit, rhs: Unit) -> Unit {
   let rhs_mult = Unit(numerator: rhs.denominator, denominator: rhs.numerator)
   multiply(lhs, rhs_mult)
 }
-
 
 /// Creates a unit from a single dimension
 pub fn simple(dimension: Dimension) -> Unit {
