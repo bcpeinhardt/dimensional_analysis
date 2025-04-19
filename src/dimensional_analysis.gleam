@@ -1,66 +1,32 @@
+import dimensional_analysis/dimension
+import dimensional_analysis/unit
+import gleam/float
 import tote/bag
 
-// For example, `miles`
-pub type Dimension {
-  Dimension(
-    // The short representation for use in equations. Example: `s` for seconds
-    short: String,
-    // The singular representation for use in display. Example: `second` for seconds.
-    singular: String,
-    // The plural representation for use in display. Example: `seconds` for seconds.
-    plural: String,
-  )
+pub opaque type Value(u) {
+  Value(quantity: Float, unit: unit.Unit)
 }
 
-// Creates a unit from a single dimension.
-fn simple(dimension: Dimension) -> Unit {
-  Unit(numerator: bag.new() |> bag.insert(1, dimension), denominator: bag.new())
+pub fn new_value(quantity: Float, unit: unit.Unit) -> Value(unit.Unit) {
+  Value(quantity:, unit:)
 }
 
-pub fn second() {
-  simple(Dimension(short: "s", singular: "second", plural: "seconds"))
+pub fn to_string(value: Value(u)) -> String {
+  let num = value.quantity |> float.to_string
+  let unit_repr = value.unit |> unit.to_short_string
+  num <> " " <> unit_repr
 }
 
-pub fn hour() {
-  simple(Dimension(short: "hr", singular: "hour", plural: "hours"))
+pub fn multiply(lhs: Value(a), rhs: Value(b)) -> Value(c) {
+  let quantity = lhs.quantity *. rhs.quantity
+  let unit = lhs.unit |> unit.multiply(rhs.unit)
+  Value(quantity:, unit:)
 }
 
-pub fn meter() {
-  simple(Dimension(short: "m", singular: "meter", plural: "meters"))
+// Converts a value to a different unit
+pub fn convert(value: Value(a), conversion: #(Value(a), Value(b))) -> Value(b) {
+  // This is like `convert(36 inches, #(12 inches, 1 ft)) => 3 ft`
+  let q =
+    value.quantity *. { conversion.1 }.quantity /. { conversion.0 }.quantity
+  Value(quantity: q, unit: { conversion.1 }.unit)
 }
-
-pub fn foot() {
-  simple(Dimension(short: "ft", singular: "foot", plural: "feet"))
-}
-
-pub fn mile() {
-  simple(Dimension(short: "mi", singular: "mile", plural: "miles"))
-}
-
-/// A unit is a fraction with a set of dimensions on top
-/// and on bottom. These units can have different degrees.
-/// Example: `m/s^2`.
-/// A bag is the perfect data structure to describe this.
-pub type Unit {
-  Unit(numerator: bag.Bag(Dimension), denominator: bag.Bag(Dimension))
-}
-
-pub fn multiply(lhs: Unit, rhs: Unit) -> Unit {
-  let numerator = bag.merge(lhs.numerator, rhs.numerator)
-  let denominator = bag.merge(lhs.denominator, rhs.denominator)
-
-  // Now we need to cancel units
-  let simplified_numerator = numerator |> bag.subtract(denominator)
-  let simplified_denominator = denominator |> bag.subtract(numerator)
-
-  Unit(numerator: simplified_numerator, denominator: simplified_denominator)
-}
-
-pub fn divide(lhs: Unit, rhs: Unit) -> Unit {
-  // Dividing a fraction simply means flipping the divisor and multiplying
-  let rhs_mult = Unit(numerator: rhs.denominator, denominator: rhs.numerator)
-  multiply(lhs, rhs_mult)
-}
-
-// An alias for divide to make units read nicely
-pub const per = divide
