@@ -28,5 +28,9 @@ pub fn convert(value: Value, conversion: #(Value, Value)) -> Value {
   // This is like `convert(36 inches, #(12 inches, 1 ft)) => 3 ft`
   let q =
     value.quantity *. { conversion.1 }.quantity /. { conversion.0 }.quantity
-  Value(quantity: q, unit: { conversion.1 }.unit)
+  let u =
+    value.unit
+    |> unit.multiply({ conversion.1 }.unit)
+    |> unit.divide({ conversion.0 }.unit)
+  Value(quantity: q, unit: u)
 }

@@ -47,7 +47,21 @@ pub fn conversion_test() {
   // 36 in * (1 ft / 12 in) = 3 ft
 
   let length = new_value(36.0, inch())
+  let inch_to_feet = #(new_value(12.0, inch()), new_value(1.0, foot()))
   length
-  |> convert(#(new_value(12.0, inch()), new_value(1.0, foot())))
+  |> convert(inch_to_feet)
   |> should.equal(new_value(3.0, foot()))
+}
+
+pub fn conversion_area_test() {
+  let length = new_value(24.0, inch())
+  let width = new_value(36.0, inch())
+  let area = length |> multiply(width)
+
+  let inch_to_feet = #(new_value(12.0, inch()), new_value(1.0, foot()))
+
+  area
+  |> convert(inch_to_feet)
+  |> convert(inch_to_feet)
+  |> should.equal(new_value(6.0, foot() |> unit.multiply(foot())))
 }
