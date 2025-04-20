@@ -15,7 +15,7 @@ pub fn basic_usage_test() {
   let height_rect =
     new_value(2.0, foot())
     |> convert(#(new_value(1.0, foot()), new_value(12.0, inch())))
-  let area = width_rect |> multiply(height_rect) |> to_string |> echo
+  let area = width_rect |> multiply(height_rect)
 }
 
 pub fn basic_dim_test() {
